@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="ANGULAR.APP.WPF/ANGULAR.APP.WPF.csproj" />
+  <Project Path="ANGULAR.CONSOLE/ANGULAR.CONSOLE.csproj" Id="e81c9094-5ed1-49a6-9e22-2fe5638f4396" />
+  <Project Path="ANGULAR.WORKER.SERVICE/ANGULAR.WORKER.SERVICE.csproj" Id="5d0ef0da-3f7d-43d9-b3fa-aa24cb07ef57" />
 </Solution>
