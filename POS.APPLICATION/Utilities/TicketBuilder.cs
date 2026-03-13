@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace ANGULAR.CONSOLE.Services
+namespace POS.APPLICATION.Utilities
 {
     public class TicketBuilder
     {

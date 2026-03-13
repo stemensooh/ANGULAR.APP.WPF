@@ -1,7 +1,7 @@
 ﻿using POS.APPLICATION.Interfaces.AppServices;
 using POS.APPLICATION.Models;
 
-namespace ANGULAR.CONSOLE.Endpoints;
+namespace POS.UI.CONSOLE.Endpoints;
 
 public static class PrinterEndpoints
 {

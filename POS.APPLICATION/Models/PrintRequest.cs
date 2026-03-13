@@ -1,4 +1,4 @@
-﻿namespace ANGULAR.CONSOLE.Models
+﻿namespace POS.APPLICATION.Models
 {
     public class PrintRequest
     {

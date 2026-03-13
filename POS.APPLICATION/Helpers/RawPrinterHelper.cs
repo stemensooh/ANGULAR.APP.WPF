@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ANGULAR.CONSOLE.Helpers
+namespace POS.APPLICATION.Helpers
 {
-    public class RawPrinterHelper
+    public static class RawPrinterHelper
     {
         [DllImport("winspool.Drv", EntryPoint = "OpenPrinterA")]
         public static extern bool OpenPrinter(string printerName, out IntPtr printer, IntPtr defaults);

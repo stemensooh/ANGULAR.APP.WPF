@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ANGULAR.CONSOLE.Services
+namespace POS.APPLICATION.Utilities
 {
     public class EscPosBuilder
     {

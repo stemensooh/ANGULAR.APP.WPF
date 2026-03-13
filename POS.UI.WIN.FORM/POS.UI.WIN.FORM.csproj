@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\POS.APPLICATION\POS.APPLICATION.csproj" />
+    <ProjectReference Include="..\POS.INFRA.HTTP\POS.INFRA.HTTP.csproj" />
+  </ItemGroup>
+
+</Project>

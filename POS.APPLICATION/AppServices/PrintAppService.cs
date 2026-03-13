@@ -1,10 +1,15 @@
-﻿using ANGULAR.CONSOLE.Helpers;
+﻿using Newtonsoft.Json;
+using POS.APPLICATION.Constanst;
+using POS.APPLICATION.Dto;
+using POS.APPLICATION.Helpers;
+using POS.APPLICATION.Interfaces.AppServices;
+using POS.APPLICATION.Utilities;
 using System.Drawing;
 using System.Drawing.Printing;
 
-namespace ANGULAR.CONSOLE.Services
+namespace POS.APPLICATION.AppServices
 {
-    public class PrinterService
+    public class PrintAppService : IPrintAppService
     {
         public IEnumerable<string> GetPrinters()
         {
@@ -55,10 +60,16 @@ namespace ANGULAR.CONSOLE.Services
 
         public void PrintSampleTicket(string printerName)
         {
+            var config = JsonConvert.DeserializeObject<ConfigDto>(File.ReadAllText(Path.Combine(PrintConstants.ProgramData, "config.json")));
+            if (config == null)
+            {
+                throw new Exception("No se pudo cargar la configuración de impresión.");
+            }
+
             var ticket = new TicketBuilder()
             .OpenDrawer()
             .Logo()
-            .Center("MI TIENDA")
+            .Center(config.Empresa ?? "")
             .Text("RUC: 0999999999")
             .Text("Guayaquil - Ecuador")
 

@@ -1,10 +1,10 @@
-﻿using ANGULAR.CONSOLE.Config;
-using ANGULAR.CONSOLE.Endpoints;
+﻿using POS.UI.CONSOLE.Config;
+using POS.UI.CONSOLE.Endpoints;
 using POS.APPLICATION.AppServices;
 using POS.APPLICATION.Interfaces.AppServices;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Host.UseWindowsService();
 builder.Services.Configure<PrinterServiceOptions>(
     builder.Configuration.GetSection("PrinterService")
 );

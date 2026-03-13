@@ -1,5 +1,19 @@
 <Solution>
-  <Project Path="ANGULAR.APP.WPF/ANGULAR.APP.WPF.csproj" />
-  <Project Path="ANGULAR.CONSOLE/ANGULAR.CONSOLE.csproj" Id="e81c9094-5ed1-49a6-9e22-2fe5638f4396" />
-  <Project Path="ANGULAR.WORKER.SERVICE/ANGULAR.WORKER.SERVICE.csproj" Id="5d0ef0da-3f7d-43d9-b3fa-aa24cb07ef57" />
+  <Folder Name="/1. UI/" />
+  <Folder Name="/1. UI/1. WEB/" />
+  <Folder Name="/1. UI/2. CONSOLE/">
+    <Project Path="POS.UI.CONSOLE/POS.UI.CONSOLE.csproj" Id="8f66a26d-cc1c-4462-ac4d-4d70cd5da765" />
+  </Folder>
+  <Folder Name="/1. UI/3. WINDOWS FORM/">
+    <Project Path="POS.UI.WIN.FORM/POS.UI.WIN.FORM.csproj" Id="ac40b1f9-0a20-4e2e-a61e-6e11314b53ad" />
+  </Folder>
+  <Folder Name="/1. UI/4. WPF/">
+    <Project Path="ANGULAR.APP.WPF/ANGULAR.APP.WPF.csproj" />
+  </Folder>
+  <Folder Name="/2. APPLICATION/">
+    <Project Path="POS.APPLICATION/POS.APPLICATION.csproj" Id="38858756-2934-4f4f-9c10-81c97fe5c1eb" />
+  </Folder>
+  <Folder Name="/3. INFRAESTRUCTURE/">
+    <Project Path="POS.INFRA.HTTP/POS.INFRA.HTTP.csproj" Id="64ea171f-8d52-4fac-a22a-57c7a0160d69" />
+  </Folder>
 </Solution>
