@@ -7,17 +7,26 @@ namespace POS.APPLICATION.Utilities
     {
         private readonly EscPosBuilder _esc = new();
         private readonly StringBuilder _preview = new();
-        private const int LineWidth = 42; // ancho típico papel 80mm
+        private readonly int LineWidth; // ancho típico papel 80mm
 
-        public TicketBuilder()
+        private const int cantW = 7;
+        private const int descW = 21;
+        private const int precUniValW = 7;
+        private const int totalW = 7;
+
+        public TicketBuilder(int lineWidth = 42)
         {
+            LineWidth = lineWidth;
             _esc.Initialize();
         }
 
         public TicketBuilder Center(string text)
         {
             _esc.Center().Bold().DoubleSize().Text(text).NormalSize().Bold(false).Left();
-            _preview.AppendLine(text.PadLeft((LineWidth + text.Length) / 2));
+            int padding = (LineWidth - text.Length) / 2;
+            if (padding < 0) padding = 0;
+
+            _preview.AppendLine(new string(' ', padding) + text);
             return this;
         }
 
@@ -38,11 +47,14 @@ namespace POS.APPLICATION.Utilities
 
         public TicketBuilder HeaderItems()
         {
+            if (cantW + descW + precUniValW + totalW != LineWidth)
+                throw new Exception("Los anchos no cuadran");
+
             string line =
-                "CANT".PadRight(4) +
-                "DESCRIPCION".PadRight(20) +
-                "DESC".PadLeft(7) +
-                "TOTAL".PadLeft(11);
+                "CANT.".PadRight(cantW) + 
+                "DESCRIPCION".PadRight(descW) +
+                "P.UNIT.".PadLeft(precUniValW) +
+                "VALOR".PadLeft(totalW);
 
             _esc.Bold().Text(line).Bold(false);
             _preview.AppendLine(line);
@@ -50,11 +62,9 @@ namespace POS.APPLICATION.Utilities
             return this;
         }
 
-        public TicketBuilder Item(int cant, string descripcion, decimal desc, decimal total)
+        public TicketBuilder Item(int cant, string descripcion, decimal precio, decimal total)
         {
-            int descWidth = 20;
-
-            var lines = WrapText(descripcion, descWidth);
+            var lines = WrapText(descripcion, descW);
 
             for (int i = 0; i < lines.Count; i++)
             {
@@ -63,18 +73,18 @@ namespace POS.APPLICATION.Utilities
                 if (i == 0)
                 {
                     line =
-                        cant.ToString().PadRight(4) +
-                        lines[i].PadRight(descWidth) +
-                        desc.ToString("0.00").PadLeft(7) +
-                        total.ToString("0.00").PadLeft(11);
+                        cant.ToString().PadRight(cantW) + 
+                        lines[i].PadRight(descW) +
+                        precio.ToString("0.00").PadLeft(precUniValW) +
+                        total.ToString("0.00").PadLeft(totalW);
                 }
                 else
                 {
                     line =
-                        "".PadRight(4) +
-                        lines[i].PadRight(descWidth) +
-                        "".PadLeft(7) +
-                        "".PadLeft(11);
+                        "".PadRight(cantW) + 
+                        lines[i].PadRight(descW) +
+                        "".PadLeft(precUniValW) +
+                        "".PadLeft(totalW);
                 }
 
                 _esc.Text(line);
@@ -86,36 +96,19 @@ namespace POS.APPLICATION.Utilities
 
         public TicketBuilder Modifier(string text, char add = '+')
         {
-            int descWidth = 20;
-
-            var lines = WrapText(add + " " + text, descWidth);
+            var lines = WrapText("  " + add + " " + text, descW);
 
             foreach (var l in lines)
             {
                 string line =
-                    "".PadRight(4) +
-                    l.PadRight(descWidth) +
-                    "".PadLeft(7) +
-                    "".PadLeft(11);
+                    "".PadRight(cantW) +
+                    l.PadRight(descW) +
+                    "".PadLeft(precUniValW) +
+                    "".PadLeft(totalW);
 
                 _esc.Text(line);
                 _preview.AppendLine(line);
             }
-
-            return this;
-        }
-
-        public TicketBuilder Item(string name, decimal price)
-        {
-            string priceStr = price.ToString("0.00");
-
-            int spaces = LineWidth - name.Length - priceStr.Length;
-            if (spaces < 1) spaces = 1;
-
-            string line = name + new string(' ', spaces) + priceStr;
-
-            _esc.Text(line);
-            _preview.AppendLine(line);
 
             return this;
         }
@@ -182,23 +175,21 @@ namespace POS.APPLICATION.Utilities
 
         private List<string> WrapText(string text, int maxWidth)
         {
-            var words = text.Split(' ');
             var lines = new List<string>();
-            var currentLine = "";
 
-            foreach (var word in words)
+            while (text.Length > maxWidth)
             {
-                if ((currentLine + word).Length > maxWidth)
-                {
-                    lines.Add(currentLine.TrimEnd());
-                    currentLine = "";
-                }
+                int wrapAt = text.LastIndexOf(' ', maxWidth);
 
-                currentLine += word + " ";
+                if (wrapAt <= 0)
+                    wrapAt = maxWidth;
+
+                lines.Add(text.Substring(0, wrapAt).Trim());
+                text = text.Substring(wrapAt).Trim();
             }
 
-            if (!string.IsNullOrWhiteSpace(currentLine))
-                lines.Add(currentLine.TrimEnd());
+            if (text.Length > 0)
+                lines.Add(text);
 
             return lines;
         }
