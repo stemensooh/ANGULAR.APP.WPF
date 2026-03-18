@@ -9,6 +9,11 @@ public static class PrinterEndpoints
     {
         app.MapGet("/", () => "Printer service running");
 
+        app.MapGet("/whoami", () =>
+        {
+            return Environment.UserName;
+        });
+
         app.MapGet("/printers", (IPrintAppService printerService) =>
         {
             return printerService.GetPrinters();
