@@ -36,6 +36,21 @@ public static class PrinterEndpoints
             return Results.Ok("Printed");
         });
 
+        app.MapPost("/print-ticket-2", (TicketRequest request, IPrintAppService printerService) =>
+        {
+            if (request.Lines != null && request.Lines.Count > 0)
+            {
+                printerService.PrintTicket(request.PrinterName!, request.Lines);
+            }
+            else
+            {
+                printerService.PrintTicket(request.PrinterName!, request.Ticket);
+            }
+
+
+            return Results.Ok("Printed");
+        });
+
         app.MapPost("/print-sample", (string printerName, IPrintAppService printerService) =>
         {
             printerService.PrintSampleTicket(printerName);

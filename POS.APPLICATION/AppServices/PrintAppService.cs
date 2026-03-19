@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using POS.APPLICATION.Constanst;
 using POS.APPLICATION.Dto;
+using POS.APPLICATION.Dto.Ticket;
 using POS.APPLICATION.Helpers;
 using POS.APPLICATION.Interfaces.AppServices;
 using POS.APPLICATION.Utilities;
@@ -57,6 +58,68 @@ namespace POS.APPLICATION.AppServices
                 .Build();
 
             PrintRaw(printerName, bytes);
+        }
+
+        public void PrintTicket(string printerName, TicketDto ticketDto)
+        {
+            try
+            {
+                Log.Information("Printing to {Printer}", printerName);
+
+                var config = JsonConvert.DeserializeObject<ConfigDto>(File.ReadAllText(Path.Combine(PrintConstants.ProgramData, "config.json")));
+                if (config == null)
+                {
+                    throw new Exception("No se pudo cargar la configuración de impresión.");
+                }
+
+                var ticket = new TicketBuilder();
+
+                ticket.OpenDrawer();
+                ticket.Emisor(ticketDto.Emisor);
+                
+                ticket
+                    .Separator()
+                    .HeaderItems()
+                    .Separator();
+
+                ticketDto.Items?.ForEach(item =>
+                {
+                    ticket.Item(item.Cantidad ?? 0, item.Descripcion!, item.PrecioUnitario ?? 0, item.Subtotal ?? 0);
+                    item.Adicional?.ForEach(mod => ticket.Modifier($"{mod.Nombre}: {mod.Valor}"));
+                });
+
+
+                ticket
+                    .Separator()
+                    .Subtotal(ticketDto.Subtotal ?? 0)
+                    .Impuestos(ticketDto.Impuestos)
+                    .Total(ticketDto.Total ?? 0)
+                    .Separator();
+
+                ticket.Receptor(ticketDto.Receptor);
+
+                ticket
+                    .Feed(3)
+                    .Cut();
+
+                var bytes = ticket.Build();
+                var preview = ticket.Preview();
+                if (printerName.Contains("PDF"))
+                {
+                    DebugPrint(preview);
+                }
+                else
+                {
+                    PrintRaw(printerName, bytes);
+                }
+
+                Log.Information("Print success");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Print failed");
+                throw;
+            }
         }
 
         public void PrintSampleTicket(string printerName)

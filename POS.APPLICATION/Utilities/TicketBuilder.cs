@@ -1,4 +1,6 @@
-﻿using System;
+﻿using POS.APPLICATION.Dto.Ticket;
+using System;
+using System.Net.Sockets;
 using System.Text;
 
 namespace POS.APPLICATION.Utilities
@@ -113,6 +115,37 @@ namespace POS.APPLICATION.Utilities
             return this;
         }
 
+        public TicketBuilder Subtotal(decimal subtotal)
+        {
+            string label = "SUBTOTAL";
+            string priceStr = subtotal.ToString("0.00");
+
+            int spaces = LineWidth - label.Length - priceStr.Length;
+
+            string line = label + new string(' ', spaces) + priceStr;
+
+            _esc.Bold().Text(line).Bold(false);
+            _preview.AppendLine(line);
+
+            return this;
+        }
+
+        public TicketBuilder Impuestos(List<ImpuestoDto>? impuestos)
+        {
+            if (impuestos is null) return this;
+            foreach (var item in impuestos)
+            {
+                string label = $"I.V.A. {item.Tarifa}%";
+                string priceStr = item.Valor.Value.ToString("0.00");
+                int spaces = LineWidth - label.Length - priceStr.Length;
+                string line = label + new string(' ', spaces) + priceStr;
+                _esc.Bold().Text(line).Bold(false);
+                _preview.AppendLine(line);
+            }
+
+            return this;
+        }
+
         public TicketBuilder Total(decimal total)
         {
             string label = "TOTAL";
@@ -169,27 +202,53 @@ namespace POS.APPLICATION.Utilities
             return this;
         }
 
+        public TicketBuilder Emisor(EmisorDto? emisor)
+        {
+            if (emisor is null) return this;
+            Center($"** {emisor?.RazonSocial} **");
+
+            if (!string.IsNullOrEmpty(emisor?.DireccionMatriz))
+                Center(emisor?.DireccionMatriz ?? "");
+            if (!string.IsNullOrEmpty(emisor?.DireccionSucursal))
+                Center(emisor?.DireccionSucursal ?? "");
+
+            Center($"RUC: {emisor?.Ruc}");
+            return this;
+        }
+
+        public TicketBuilder Receptor(ReceptorDto? receptor)
+        {
+            if (receptor is null) return this;
+            Separator();
+            Text($"CLIENTE: {receptor.RazonSocial}");
+            Text($"CED/RUC: {receptor.Identificacion}");
+            Separator();
+            return this;
+        }
+
         public byte[] Build() => _esc.Build();
 
         public string Preview() => _preview.ToString();
 
         private List<string> WrapText(string text, int maxWidth)
         {
+            var words = text.Split(' ');
             var lines = new List<string>();
+            var currentLine = "";
 
-            while (text.Length > maxWidth)
+            foreach (var word in words)
             {
-                int wrapAt = text.LastIndexOf(' ', maxWidth);
+                if ((currentLine + word).Length > maxWidth)
+                {
+                    lines.Add(currentLine.TrimEnd());
+                    currentLine = "";
+                }
 
-                if (wrapAt <= 0)
-                    wrapAt = maxWidth;
-
-                lines.Add(text.Substring(0, wrapAt).Trim());
-                text = text.Substring(wrapAt).Trim();
+                currentLine += word + " ";
             }
 
-            if (text.Length > 0)
-                lines.Add(text);
+            if (!string.IsNullOrWhiteSpace(currentLine))
+                lines.Add(currentLine.TrimEnd());
 
             return lines;
         }
